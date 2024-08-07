@@ -125,6 +125,13 @@ class DownloadOption {
   public cleanMarkdown?: number;
   // 过滤规则
   public filterRule?: string;
+  // 要不要翻译
+  public translate?: number;
+  // 翻译的key
+  public transAppKey?: string;
+  // 翻译的密钥
+  public transSecretKey?: string;
+
 }
 class FilterRuleInfo {
   // 标题包含
@@ -156,12 +163,14 @@ class PdfInfo {
   public fileName?: string;
   // 保存路径
   public savePath: string;
+  public htmlName: string;
 
-  constructor(id: string, title: string, savePath: string, fileName?: string) {
+  constructor(id: string, title: string, savePath: string, htmlName: string, fileName?: string) {
     this.id = id;
     this.title = title;
     this.fileName = fileName;
     this.savePath = savePath;
+    this.htmlName =htmlName;
   }
 }
 // NodeWorkerResponse的code枚举类
@@ -484,7 +493,7 @@ class Service {
       window.onload = function () {
         var innerStr = \`<div class="comment">
           <div class="desc">精选留言</div>\`
-        
+
         for (const electedComment of electedCommentArr) {
           var contentId = electedComment['content_id']
           var logoUrl = electedComment['logo_url']
@@ -524,7 +533,7 @@ class Service {
                 </div>
               </div>\`
           }
-          
+
           var itemStr = \`<div class="comment-item">
             <div>
               <img src="\${logoUrl}">
@@ -539,7 +548,7 @@ class Service {
 
           innerStr += itemStr
         }
-        
+
 
         innerStr += \`</div></div>\`
         var footEle = document.querySelector(".foot");
@@ -569,7 +578,7 @@ class Service {
                   <div class="content">\${content}</div>
                 </div>
               </div>\`
-    
+
         let replyArr = electedCommentDetailMap[contentId]
         replyArr = replyArr ? replyArr : selectedComment['reply_new']['reply_list']
         let applyHtml = '<div class="a-desc">全部回复</div>'
@@ -594,7 +603,7 @@ class Service {
           }
         }
         document.querySelector(".dialog .all-deply").innerHTML = applyHtml
-    
+
         let dialogEle = document.querySelector('.dialog');
         dialogEle.style.display = 'block'
       }

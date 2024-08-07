@@ -1,16 +1,18 @@
+import * as Readability from '@mozilla/readability';
+import axios from 'axios';
+import axiosRetry from 'axios-retry';
+import md5 from 'blueimp-md5';
+import * as cheerio from 'cheerio';
+import { CheerioAPI } from 'cheerio/lib/load';
+import * as fs from 'fs';
+import { JSDOM } from 'jsdom';
+import * as mysql from 'mysql2';
+import * as path from 'path';
 import { parentPort, workerData } from 'worker_threads';
 import logger from './logger';
-import { StrUtil, FileUtil, DateUtil, HttpUtil } from './utils';
-import { GzhInfo, ArticleInfo, ArticleMeta, PdfInfo, DownloadOption, FilterRuleInfo, Service, NodeWorkerResponse, NwrEnum, DlEventEnum } from './service';
-import axios from 'axios';
-import md5 from 'blueimp-md5';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as mysql from 'mysql2';
-import * as Readability from '@mozilla/readability';
-import * as cheerio from 'cheerio';
-import { JSDOM } from 'jsdom';
-import axiosRetry from 'axios-retry';
+import { ArticleInfo, ArticleMeta, DlEventEnum, DownloadOption, FilterRuleInfo, GzhInfo, NodeWorkerResponse, NwrEnum, PdfInfo, Service } from './service';
+import { BaiduTranslator } from './translator';
+import { DateUtil, FileUtil, HttpUtil, StrUtil } from './utils';
 
 const onRetry = (retryCount, _err, requestConfig) => {
   logger.info(`第${retryCount}次请求失败`, requestConfig.url, requestConfig.params);
@@ -294,98 +296,256 @@ async function dlOne(articleInfo: ArticleInfo, saveToDb = true) {
 
   const proArr: Promise<void>[] = [];
 
-  // 判断是否保存markdown
-  if (1 == downloadOption.dlMarkdown) {
-    proArr.push(
-      new Promise((resolve) => {
-        const markdownStr = turndownService.turndown($.html());
-        // 添加评论
-        const commentStr = service.getMarkdownComment(articleInfo.commentList, articleInfo.replyDetailMap);
-        fs.writeFile(path.join(savePath, `${articleInfo.fileName}.md`), markdownStr + commentStr, () => {
-          resp(NwrEnum.SUCCESS, `【${article.title}】保存Markdown完成`);
-          resolve();
-        });
-      })
-    );
+  // todo 加入翻译,看能不能搞个类似插件的玩意儿
+  doDownLoad($.html());
+  if (1 == downloadOption.translate) {
+    await getTranslateHtmlStr($);
+    doDownLoad($.html(), 'en');
   }
-  // 判断是否保存html
-  if (1 == downloadOption.dlHtml) {
-    proArr.push(
-      new Promise((resolve) => {
-        const $html = cheerio.load($.html());
-        // 添加样式美化
-        const headEle = $html('head');
-        headEle.append(service.getArticleCss());
-        // 添加评论数据
-        if (articleInfo.commentList) {
-          headEle.after(service.getHtmlComment(articleInfo.commentList, articleInfo.replyDetailMap));
-        }
-        const htmlReadabilityPage = $html('#readability-page-1');
-        // 评论的div块
-        htmlReadabilityPage.after('<div class="foot"></div><div class="dialog"><div class="dcontent"><div class="aclose"><span>留言</span><a class="close"href="javascript:closeDialog();">&times;</a></div><div class="contain"><div class="d-top"></div><div class="all-deply"></div></div></div></div>');
-        fs.writeFile(path.join(savePath, `${articleInfo.fileName}.html`), $html.html(), () => {
-          resp(NwrEnum.SUCCESS, `【${article.title}】保存HTML完成`);
-          resolve();
-        });
-      })
-    );
-  }
-  // 判断是否保存pdf
-  if (1 == downloadOption.dlPdf) {
-    proArr.push(
-      new Promise((resolve) => {
-        const $pdf = cheerio.load($.html());
-        // 添加样式美化
-        const headEle = $pdf('head');
-        headEle.append(service.getArticleCss());
-        // 添加评论数据
-        if (articleInfo.commentList) {
-          headEle.after(service.getHtmlComment(articleInfo.commentList, articleInfo.replyDetailMap, true));
-        }
-        const htmlReadabilityPage = $pdf('#readability-page-1');
-        // 评论的div块
-        htmlReadabilityPage.after('<div class="foot"></div><div class="dialog"><div class="dcontent"><div class="aclose"><span>留言</span><a class="close"href="javascript:closeDialog();">&times;</a></div><div class="contain"><div class="d-top"></div><div class="all-deply"></div></div></div></div>');
-        fs.writeFile(path.join(savePath, 'pdf.html'), $pdf.html(), () => {
-          resp(NwrEnum.SUCCESS, `【${article.title}】保存pdf的html文件完成`);
-          const articleId = md5(articleInfo.contentUrl);
-          // 通知main线程，保存pdf
-          resp(NwrEnum.PDF, '保存pdf', new PdfInfo(articleId, article.title, savePath, articleInfo.fileName));
-          // 保存回调钩子，等待main线程保存pdf完成
-          PDF_RESOLVE_MAP.set(articleId, resolve);
-        });
-      })
-    );
-  }
+  // if(){
+  // await getTranslateHtmlStr($, () => {
+  //   logger.info('翻译之后的html内容为=====>', $.html());
+  //   const $html = cheerio.load($.html());
+  //   // 添加样式美化
+  //   const headEle = $html('head');
+  //   headEle.append(service.getArticleCss());
+  //   fs.writeFileSync(path.join(savePath, `${articleInfo.fileName}-en.html`), $html.html());
+  //   resp(NwrEnum.SUCCESS, `【${article.title}】保存HTML完成`);
+  //
+  //   const markdownStr = turndownService.turndown($.html());
+  //   // 添加评论
+  //   const commentStr = service.getMarkdownComment(articleInfo.commentList, articleInfo.replyDetailMap);
+  //   fs.writeFileSync(path.join(savePath, `${articleInfo.fileName}-en.md`), markdownStr + commentStr);
+  //   resp(NwrEnum.SUCCESS, `【${article.title}】保存Markdown完成`);
+  // });
 
-  // 判断是否保存到数据库
-  if (1 == downloadOption.dlMysql && CONNECTION_STATE && saveToDb) {
-    proArr.push(
-      new Promise((resolve) => {
-        // 是否要清洗markdown并保存数据库（这是个人需求）
-        let markdownStr: string = '';
-        if (1 == downloadOption.cleanMarkdown) {
-          const cleanHtml = service.getTmpHtml($.html());
-
-          markdownStr = turndownService.turndown(cleanHtml);
-        }
-
-        const modSqlParams = [articleInfo.title, articleInfo.html, articleInfo.author, articleInfo.contentUrl, articleInfo.datetime, articleInfo.copyrightStat, JSON.stringify(articleInfo.commentList), JSON.stringify(articleInfo.replyDetailMap), articleInfo.digest, articleInfo.cover, articleInfo.metaInfo?.jsName, markdownStr, articleInfo.title, articleInfo.datetime];
-        CONNECTION.query(INSERT_SQL, modSqlParams, function (err) {
-          if (err) {
-            logger.error('mysql插入失败', err);
-          } else {
-            resp(NwrEnum.SUCCESS, `【${article.title}】保存Mysql完成`);
-          }
-          resolve();
-        });
-      })
-    );
-  }
 
   for (const pro of proArr) {
     await pro;
   }
   resp(NwrEnum.SUCCESS, `【${article.title}】下载完成，共${imgCount}张图，url：${url}`);
+  // Promise.all(proArr).then(() => {
+  //   resp(NwrEnum.SUCCESS, `【${article.title}】下载完成，共${imgCount}张图，url：${url}`);
+  // });
+
+  function doDownLoad(htmlStr: string, trans2name: string = '') {
+    // 判断是否保存markdown
+    if (1 == downloadOption.dlMarkdown) {
+      proArr.push(
+        new Promise((resolve) => {
+          const markdownStr = turndownService.turndown(htmlStr);
+          // 添加评论
+          const commentStr = service.getMarkdownComment(articleInfo.commentList, articleInfo.replyDetailMap);
+          fs.writeFile(path.join(savePath, `${articleInfo.fileName}${trans2name}.md`), markdownStr + commentStr, () => {
+            resp(NwrEnum.SUCCESS, `【${article.title}${trans2name}】保存Markdown完成`);
+            resolve();
+          });
+        })
+      );
+    }
+    // 判断是否保存html
+    if (1 == downloadOption.dlHtml) {
+      proArr.push(
+        new Promise((resolve) => {
+          const $html = cheerio.load(htmlStr);
+          // 添加样式美化
+          const headEle = $html('head');
+          headEle.append(service.getArticleCss());
+          // 添加评论数据
+          if (articleInfo.commentList) {
+            headEle.after(service.getHtmlComment(articleInfo.commentList, articleInfo.replyDetailMap));
+          }
+          const htmlReadabilityPage = $html('#readability-page-1');
+          // 评论的div块
+          htmlReadabilityPage.after('<div class="foot"></div><div class="dialog"><div class="dcontent"><div class="aclose"><span>留言</span><a class="close"href="javascript:closeDialog();">&times;</a></div><div class="contain"><div class="d-top"></div><div class="all-deply"></div></div></div></div>');
+          fs.writeFile(path.join(savePath, `${articleInfo.fileName}${trans2name}.html`), $html.html(), () => {
+            resp(NwrEnum.SUCCESS, `【${article.title}${trans2name}】保存HTML完成`);
+            resolve();
+          });
+        })
+      );
+    }
+    // 判断是否保存pdf
+    if (1 == downloadOption.dlPdf) {
+      proArr.push(
+        new Promise((resolve) => {
+          const $pdf = cheerio.load(htmlStr);
+          // 添加样式美化
+          const headEle = $pdf('head');
+          headEle.append(service.getArticleCss());
+          // 添加评论数据
+          if (articleInfo.commentList) {
+            headEle.after(service.getHtmlComment(articleInfo.commentList, articleInfo.replyDetailMap, true));
+          }
+          const htmlReadabilityPage = $pdf('#readability-page-1');
+          // 评论的div块
+          htmlReadabilityPage.after('<div class="foot"></div><div class="dialog"><div class="dcontent"><div class="aclose"><span>留言</span><a class="close"href="javascript:closeDialog();">&times;</a></div><div class="contain"><div class="d-top"></div><div class="all-deply"></div></div></div></div>');
+          fs.writeFile(path.join(savePath, `pdf${trans2name}.html`), $pdf.html(), () => {
+            resp(NwrEnum.SUCCESS, `【${article.title}${trans2name}】保存pdf的html文件完成`);
+            const articleId = md5(articleInfo.contentUrl);
+            // 通知main线程，保存pdf
+            resp(NwrEnum.PDF, '保存pdf', new PdfInfo(articleId, article.title, savePath, `pdf${trans2name}.html`, articleInfo.fileName + trans2name));
+            // 保存回调钩子，等待main线程保存pdf完成
+            PDF_RESOLVE_MAP.set(articleId, resolve);
+          });
+        })
+      );
+    }
+
+    // 判断是否保存到数据库
+    if (1 == downloadOption.dlMysql && CONNECTION_STATE && saveToDb) {
+      proArr.push(
+        new Promise((resolve) => {
+          // 是否要清洗markdown并保存数据库（这是个人需求）
+          let markdownStr: string = '';
+          if (1 == downloadOption.cleanMarkdown) {
+            const cleanHtml = service.getTmpHtml(htmlStr);
+
+            markdownStr = turndownService.turndown(cleanHtml);
+          }
+          // todo 确认多语言保存的正不正常
+          const modSqlParams = [articleInfo.title+trans2name, articleInfo.html, articleInfo.author, articleInfo.contentUrl, articleInfo.datetime, articleInfo.copyrightStat, JSON.stringify(articleInfo.commentList), JSON.stringify(articleInfo.replyDetailMap), articleInfo.digest, articleInfo.cover, articleInfo.metaInfo?.jsName, markdownStr, articleInfo.title, articleInfo.datetime];
+          CONNECTION.query(INSERT_SQL, modSqlParams, function (err) {
+            if (err) {
+              logger.error('mysql插入失败', err);
+            } else {
+              resp(NwrEnum.SUCCESS, `【${article.title}${trans2name}】保存Mysql完成`);
+            }
+            resolve();
+          });
+        })
+      );
+    }
+  }
+}
+
+interface HtmlTranslateEleInfo {
+  target: ReturnType<any>;
+  deep: number;
+  parent: ReturnType<any>;
+}
+
+// async function getTranslateHtmlStr($: CheerioAPI, completeFn) {
+async function getTranslateHtmlStr($) {
+  if (!downloadOption.transAppKey || !downloadOption.transSecretKey) {
+    return;
+  }
+  const body = $('body')[0];
+  const arr: HtmlTranslateEleInfo[] = [];
+  const deep = 0;
+  loadTagText(body.children[0], $, arr, deep);
+  const transPromiseArr: Promise<void>[] = [];
+  // const  containsOnlyNonChineseArr = []
+  const containsOnlyNonChineseMap = new Map<number, Map<number, HtmlTranslateEleInfo[]>>();
+  const parentArr: ReturnType<any>[] = [];
+  const transResMap = new Map();
+  const deepMap = arr.reduce(
+    (accumulator, current) => {
+      const key = current.deep;
+      if (!accumulator[key]) {
+        accumulator[key] = [];
+      }
+      accumulator[key].push(current);
+      return accumulator;
+    },
+    {} as { number: HtmlTranslateEleInfo[] }
+  );
+  const baiduTranslator = new BaiduTranslator();
+  for (let index = Object.keys(deepMap).length - 1; index >= 0; index--) {
+    const tmpArr = deepMap[Object.keys(deepMap)[index]] as HtmlTranslateEleInfo[];
+    // const element = $(arr[index]);
+    for (const tmp of tmpArr) {
+      const element = $(tmp.target);
+      if (!StrUtil.containsOnlyNonChinese(element.text().trim())) {
+        let fd = parentArr.findIndex((item) => $(item).is(tmp.parent));
+        if (fd === -1) {
+          parentArr.push(tmp.parent);
+          fd = parentArr.length - 1;
+        }
+        if (containsOnlyNonChineseMap.has(tmp.deep)) {
+          const tmpMap = containsOnlyNonChineseMap.get(tmp.deep);
+          if (tmpMap) {
+            if (tmpMap.has(fd)) {
+              const arr = tmpMap.get(fd);
+              if (arr) {
+                arr.push(tmp);
+                tmpMap.set(fd, arr);
+              }
+            } else {
+              const arr: HtmlTranslateEleInfo[] = [];
+              arr.push(tmp);
+              tmpMap.set(fd, arr);
+            }
+          }
+        } else {
+          const tmpMap = new Map<number, HtmlTranslateEleInfo[]>();
+          const arr: HtmlTranslateEleInfo[] = [];
+          arr.push(tmp);
+          tmpMap.set(fd, arr);
+          containsOnlyNonChineseMap.set(tmp.deep, tmpMap);
+        }
+        const elementText = element.text();
+        transPromiseArr.push(
+          baiduTranslator.translate(elementText, downloadOption.transAppKey, downloadOption.transSecretKey, 'zh', 'en', (transStr: string, res: string) => {
+            transResMap.set(elementText, res);
+          })
+        );
+      }
+    }
+
+    await Promise.all(transPromiseArr).then(() => {
+      for (const element of containsOnlyNonChineseMap) {
+        const parentInfoMap = element[1];
+        for (const parentInfoMapKey of parentInfoMap.keys()) {
+          const parentEle = parentArr[parentInfoMapKey];
+          let replaceStr = $(parentEle).html()?.replaceAll('&nbsp;', ' ');
+          const eleArr = parentInfoMap.get(parentInfoMapKey);
+          if (eleArr) {
+            for (let i = 0; i < eleArr.length; i++) {
+              const childEle = $(eleArr[i].target);
+              const elementText = childEle.text();
+              // const elementText = childEle.text();
+              if (replaceStr && elementText) {
+                const trans = transResMap.get(elementText);
+                if (trans) {
+                  replaceStr = replaceStr.replace(elementText.replaceAll(' ', ' '), trans);
+                }
+              }
+              logger.info(`当前元素信息[${elementText}]replace之后==========>[${replaceStr}]`);
+            }
+            $(parentEle).html(' ' + replaceStr + ' ');
+          }
+        }
+      }
+    });
+  }
+
+  // fs.writeFileSync('/Users/suzhiwei/Documents/gitsource/wechatDownload/resources/trans.json', JSON.stringify(Array.from(transResMap)));
+
+  // completeFn($.html());
+}
+
+/**
+ * 获取需要翻译的文本节点
+ * @param bodyChildren
+ * @param $
+ * @param arr
+ * @param deep
+ */
+function loadTagText(bodyChildren: ReturnType<any>, $: CheerioAPI, arr: HtmlTranslateEleInfo[], deep: number) {
+  if (bodyChildren.type === 'text') {
+    arr.push({ target: $(bodyChildren), deep: deep, parent: bodyChildren.parent });
+  }
+
+  if (bodyChildren.type === 'tag') {
+    deep++;
+    if (bodyChildren.children && bodyChildren.children.length > 0) {
+      for (let index = 0; index < bodyChildren.children.length; index++) {
+        const element = bodyChildren.children[index];
+        loadTagText(element, $, arr, deep);
+      }
+    }
+  }
 }
 
 const picListRegex = /window.picture_page_info_list\s*=\s(\[[\s\S]*\])\.slice/;

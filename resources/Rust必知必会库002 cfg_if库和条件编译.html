@@ -1,0 +1,219 @@
+<html><head>
+      <style type="text/css">
+      .page {
+        max-width: 677px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1,h2 {
+        text-align: center;
+      }
+      .page img {
+        max-width: 100%;
+        margin: 0 auto;
+        display: block;
+      }
+      .code-snippet__fix {
+        font-size: 14px;
+        margin: 10px 0;
+        display: block;
+        color: #333;
+        position: relative;
+        background-color: rgba(0,0,0,.03);
+        border: 1px solid #f0f0f0;
+        border-radius: 2px;
+        display: -ms-flexbox;
+        display: flex;
+        line-height: 26px;
+      }
+      .code-snippet__fix .code-snippet__line-index {
+          counter-reset: line;
+          -ms-flex-negative: 0;
+          flex-shrink: 0;
+          height: 100%;
+          padding: 1em;
+          list-style-type: none;
+      }
+      .code-snippet__fix .code-snippet__line-index li {
+          list-style-type: none;
+          text-align: right;
+      }
+      .code-snippet__fix .code-snippet__line-index li:before {
+        min-width: 1.5em;
+        text-align: right;
+        left: -2.5em;
+        counter-increment: line;
+        content: counter(line);
+        display: inline;
+        color: rgba(0,0,0,.15);
+      }
+      .code-snippet__fix pre {
+          overflow-x: auto;
+          padding: 1em 1em 1em 0;
+          white-space: normal;
+          -ms-flex: 1;
+          flex: 1;
+          -webkit-overflow-scrolling: touch;
+      }
+      .code-snippet__fix code {
+          text-align: left;
+          font-size: 14px;
+          display: block;
+          white-space: pre;
+          display: -ms-flexbox;
+          display: flex;
+          position: relative;
+          font-family: Consolas,Liberation Mono,Menlo,Courier,monospace;
+      }
+      .music-div audio {
+        min-width: 300px;
+        width: 100%;
+        height: 30px;
+      }
+      .music-div {
+        display: flex;
+        background-color: #f1f3f4;
+        align-items: center;
+        padding: 8px 8px 8px 20px;
+        margin: 10px 0;
+      }
+      .audio-dev {
+        flex: 1;
+      }
+      .music_card_title {
+          font-size: 17px;
+          font-weight: 700;
+      }
+      .music_card_desc {
+        color: rgba(0,0,0,.5);
+          font-weight: 400;
+          font-size: 12px;
+          padding-top: 8px;
+          padding-right: 1.33333333em;
+      }
+      .foot {
+        background-color: #ededed;
+        padding: 8px;
+        display: none
+      }
+      .comment {
+        max-width: 677px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .comment .desc {
+        margin-bottom: 10px;
+      }
+      .comment-item {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .comment-item img {
+        width: 30px;
+        margin-right: 8px;
+      }
+      .comment-item .nick-name {
+        color: #695e5ee3;
+        margin-right: 8px;
+        font-size: 14px;
+      }
+      .comment-item .native-place {
+        color: #9e9e9ed1;
+        font-size: 14px;
+      }
+      .comment-item .content {
+        padding-top: 5px;
+        white-space: pre-line;
+      }
+      .comment-item .more-reply {
+        margin-top: 10px;
+        color: #9e9e9ed1;
+      }
+      .comment-item .reply {
+        display: flex;
+        margin-top: 10px;
+      }
+      .comment-item .reply img {
+        width: 20px;
+        margin-right: 8px;
+      }
+      .dialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      .dialog .dcontent {
+        width: 600px;
+        height: 90%;
+        margin: 2% auto auto auto;
+        background-color: #fefefe;
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+        padding-top: 35px;
+      }
+      .dialog .aclose {
+        text-align: left;
+        line-height: 25px;
+        padding: 5px 10px 0px 10px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        background-color: #ffffff;
+      }
+      .dialog .aclose span {
+        font-size: 14px;
+        color: #9e9e9ed1;
+      }
+      .dialog .close {
+        color: #898686;
+        float: right;
+        font-size: 30px;
+        text-decoration: none;
+      }
+      .dialog .contain {
+        height: 100%;
+        overflow: auto;
+        display: flex;
+        flex-flow: column;
+        border-radius: 5px;
+      }
+      .dialog .d-top {
+        padding: 0 20px;
+      }
+      .dialog .all-deply {
+        background-color: #f7f7f7;
+        padding: 10px 20px 0 20px;
+        height: 100%;
+      }
+      .dialog .all-deply .a-desc {
+        color: #898686;
+        margin-bottom: 10px;
+      }
+      .reply-nick {
+        color: #898686;
+        margin: 0 3px;
+      }
+      .meta-div {
+        margin-bottom: 10px;
+        color: #898686;
+      }
+      .meta-div span {
+        margin-right: 10px;
+      }
+      .meta-div .copyright-span {
+        background-color: #0000000d;
+        font-size: 14px;
+        padding: 2px;
+      }
+      </style>
+    </head><body><div id="readability-page-1" class="page"><h1>Rust必知必会库002: cfg_if库和条件编译</h1><div class="meta-div"><span class="copyright-span">原创 </span><span>作者:晁岳攀(鸟窝) </span><span>公号:鸟窝聊技术 </span><span>发布时间:2024-07-30 8:26 </span><span>发表于北京 </span></div><div>原文地址：<a href="https://mp.weixin.qq.com/s/QPApaUimNE7S8sJzX8_RmQ" target="_blank">Rust必知必会库002: cfg_if库和条件编译</a></div><div class="rich_media_content js_underline_content
+                       autoTypeSetting24psection
+            " id="js_content"><section data-tool="mdnice编辑器" data-website="https://www.mdnice.com"><p data-tool="mdnice编辑器">cfg_if 是一个 Rust 的实用工具库,主要用于简化条件编译相关的代码。它提供了一个宏 &nbsp;<code>cfg_if!</code>,可以让你更方便地编写基于编译时配置的条件代码。下面我来详细介绍一下这个库。</p><p data-tool="mdnice编辑器">cfg_if 库的核心是 &nbsp;<code>cfg_if!</code>&nbsp; 宏,它允许你根据不同的编译时条件选择性地编译代码块。这对于处理跨平台代码、特性标志或其他编译时变量非常有用。</p><p data-tool="mdnice编辑器">首先,在 Cargo.toml 中添加依赖:</p><pre data-tool="mdnice编辑器"><span></span><code>cfg-if = "1.0.0"<br></code></pre><p data-tool="mdnice编辑器">然后,在代码中使用 &nbsp;<code>cfg_if!</code>&nbsp; 宏:</p><pre data-tool="mdnice编辑器"><span></span><code><span>use</span>&nbsp;cfg_if::cfg_if;<p>cfg_if!&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>if</span>&nbsp;<span>#[cfg(unix)]</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><span>fn</span>&nbsp;<span>foo</span></span>()&nbsp;{&nbsp;<span>/*&nbsp;unix-specific&nbsp;functionality&nbsp;*/</span>&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span>else</span>&nbsp;<span>if</span>&nbsp;<span>#[cfg(windows)]</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><span>fn</span>&nbsp;<span>foo</span></span>()&nbsp;{&nbsp;<span>/*&nbsp;windows-specific&nbsp;functionality&nbsp;*/</span>&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span>else</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><span>fn</span>&nbsp;<span>foo</span></span>()&nbsp;{&nbsp;<span>/*&nbsp;fallback&nbsp;implementation&nbsp;*/</span>&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}</p></code></pre><p data-tool="mdnice编辑器">可以看到使用这个库的优势：</p><ul data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section>简化语法: 相比于嵌套的 &nbsp;<code>#[cfg()]</code>&nbsp; 属性,cfg_if 提供了更清晰、更易读的语法。</section></li><li><section>避免错误: 它可以帮助避免一些常见的条件编译错误,如忘记 else 分支。</section></li><li><section>可组合: 可以轻松组合多个条件。</section></li></ul><p data-tool="mdnice编辑器">你还可以使用更高级的语法：</p><pre data-tool="mdnice编辑器"><span></span><code>cfg_if!&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>if</span>&nbsp;<span>#[cfg(all(unix,&nbsp;target_pointer_width&nbsp;=&nbsp;<span>"32"</span>))]</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;32-bit&nbsp;unix&nbsp;systems</span><br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span>else</span>&nbsp;<span>if</span>&nbsp;<span>#[cfg(all(unix,&nbsp;target_pointer_width&nbsp;=&nbsp;<span>"64"</span>))]</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;64-bit&nbsp;unix&nbsp;systems</span><br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span>else</span>&nbsp;<span>if</span>&nbsp;<span>#[cfg(windows)]</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;windows&nbsp;systems</span><br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span>else</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;other&nbsp;systems</span><br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}<br></code></pre><p data-tool="mdnice编辑器">cfg_if 宏在<strong>编译时</strong>展开,生成等效的 <code>if-else 链</code> 或 <code>match 表达式</code>。这意味着它没有运行时开销,所有的条件检查都在编译时完成。</p><p data-tool="mdnice编辑器">适用场景：</p><ul data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section>跨平台代码</section></li><li><section>特性标志处理</section></li><li><section>编译时优化</section></li><li><section>API 兼容性层</section></li></ul><p data-tool="mdnice编辑器">不适用场景：</p><ul data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section>cfg_if 主要用于编译时条件,不适用于运行时动态选择。</section></li><li><section>过度使用可能会使代码难以理解,应适度使用。</section></li></ul><p data-tool="mdnice编辑器">虽然 cfg_if 很有用,但在某些简单情况下,直接使用 Rust 的 &nbsp;<code>#[cfg()]</code>&nbsp; 属性可能更直接。选择使用 cfg_if 还是原生 cfg 属性取决于具体的使用场景和个人偏好。</p><p data-tool="mdnice编辑器">接下来简单介绍 Rust 的 &nbsp;<code>#[cfg()]</code></p><h2 data-tool="mdnice编辑器"><span><code>#[cfg()]</code></span></h2><p data-tool="mdnice编辑器"><code>#[cfg()]</code>&nbsp; 是 Rust 的一个内置属性,用于条件编译。它允许您根据指定的配置选项来包含或排除代码。这是 Rust 中进行条件编译的主要方式, 例如：</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(unix)]</span><br><span><span>fn</span>&nbsp;<span>unix_only</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;这个函数只在&nbsp;Unix&nbsp;系统上编译</span><br>}<p><span>#[cfg(windows)]</span><br><span><span>fn</span>&nbsp;<span>windows_only</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;这个函数只在&nbsp;Windows&nbsp;系统上编译</span><br>}</p></code></pre><p data-tool="mdnice编辑器">常用的配置选项:</p><ul data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section>操作系统:&nbsp;<code>unix</code>,&nbsp;<code>windows</code>,&nbsp;<code>macos</code>,&nbsp;<code>linux</code> 等等</section></li><li><section>架构:&nbsp;<code>x86</code>,&nbsp;<code>x86_64</code>,&nbsp;<code>arm</code> 等等</section></li><li><section>特性标志: 在 &nbsp;<code>Cargo.toml</code>&nbsp; 中定义的特性</section></li><li><section>编译器版本:&nbsp;<code>rustc_1_40</code>&nbsp; 等</section></li></ul><p data-tool="mdnice编辑器">你也可以进行逻辑运算符组合多个条件：</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(all(unix,&nbsp;target_pointer_width&nbsp;=&nbsp;<span>"64"</span>))]</span><br><span><span>fn</span>&nbsp;<span>unix_64bit_function</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;只在&nbsp;64&nbsp;位&nbsp;Unix&nbsp;系统上编译</span><br>}<p><span>#[cfg(any(windows,&nbsp;macos))]</span><br><span><span>fn</span>&nbsp;<span>windows_or_mac_function</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;在&nbsp;Windows&nbsp;或&nbsp;macOS&nbsp;上编译</span><br>}</p><p><span>#[cfg(not(debug_assertions))]</span><br><span><span>fn</span>&nbsp;<span>release_only</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;只在&nbsp;release&nbsp;模式下编译</span><br>}</p></code></pre><p data-tool="mdnice编辑器">它可以应用在多个场景：</p><p data-tool="mdnice编辑器">1、可以应用于模块级：</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(feature&nbsp;=&nbsp;<span>"advanced"</span>)]</span><br><span>mod</span>&nbsp;advanced_features&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;这个模块只在启用&nbsp;"advanced"&nbsp;特性时编译</span><br>}<br></code></pre><p data-tool="mdnice编辑器">2、条件导入</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(unix)]</span><br><span>use</span>&nbsp;std::os::unix::fs::MetadataExt;<p><span>#[cfg(windows)]</span><br><span>use</span>&nbsp;std::os::windows::fs::MetadataExt;</p></code></pre><p data-tool="mdnice编辑器">3、在代码中使用</p><pre data-tool="mdnice编辑器"><span></span><code><span>if</span>&nbsp;<span>cfg!</span>(debug_assertions)&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>println!</span>(<span>"Debug&nbsp;mode"</span>);<br>}&nbsp;<span>else</span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>println!</span>(<span>"Release&nbsp;mode"</span>);<br>}<br></code></pre><p data-tool="mdnice编辑器">4、甚至可以使用自定义标志
+在 &nbsp;<code>Cargo.toml</code>&nbsp; 中定义自己的特性标志:</p><pre data-tool="mdnice编辑器"><span></span><code>[features]<br>my_feature&nbsp;=&nbsp;[]<br></code></pre><p data-tool="mdnice编辑器">然后在代码中使用:</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(feature&nbsp;=&nbsp;<span>"my_feature"</span>)]</span><br><span><span>fn</span>&nbsp;<span>feature_specific_function</span></span>()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;...</span><br>}<br></code></pre><p data-tool="mdnice编辑器">总得来说，Rust 的 <code>cfg</code> 属性和 <code>cfg!</code> 宏支持多种逻辑组合。以下是完整的列表：</p><ol data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>all</code>: 所有条件都必须为真</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(all(unix,&nbsp;target_pointer_width&nbsp;=&nbsp;<span>"64"</span>))]</span><br></code></pre><ol start="2" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>any</code>: 任意一个条件为真即可</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(any(windows,&nbsp;macos))]</span><br></code></pre><ol start="3" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>not</code>: 条件必须为假</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(not(windows))]</span><br></code></pre><ol start="4" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_os</code>: 目标操作系统</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_os&nbsp;=&nbsp;<span>"linux"</span>)]</span><br></code></pre><ol start="5" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_arch</code>: 目标架构</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_arch&nbsp;=&nbsp;<span>"x86_64"</span>)]</span><br></code></pre><ol start="6" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_feature</code>: 特定的 CPU 特性</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_feature&nbsp;=&nbsp;<span>"avx2"</span>)]</span><br></code></pre><ol start="7" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_endian</code>: 字节序</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_endian&nbsp;=&nbsp;<span>"little"</span>)]</span><br></code></pre><ol start="8" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_pointer_width</code>: 指针宽度</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_pointer_width&nbsp;=&nbsp;<span>"64"</span>)]</span><br></code></pre><ol start="9" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_env</code>: 目标环境</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_env&nbsp;=&nbsp;<span>"gnu"</span>)]</span><br></code></pre><ol start="10" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>target_vendor</code>: 目标供应商</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(target_vendor&nbsp;=&nbsp;<span>"apple"</span>)]</span><br></code></pre><ol start="11" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>feature</code>: 编译时特性</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(feature&nbsp;=&nbsp;<span>"my_feature"</span>)]</span><br></code></pre><ol start="12" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>debug_assertions</code>: 是否启用调试断言</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(debug_assertions)]</span><br></code></pre><ol start="13" data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>test</code>: 是否在测试模式下编译</section></li></ol><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(test)]</span><br></code></pre><p data-tool="mdnice编辑器">这些条件可以任意组合使用：</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg(all(unix,&nbsp;not(any(target_os&nbsp;=&nbsp;<span>"macos"</span>,&nbsp;target_os&nbsp;=&nbsp;<span>"ios"</span>))))]</span><br></code></pre><p data-tool="mdnice编辑器">此外，还可以使用 <code>cfg_attr</code> 来条件性地应用其他属性（第一个参数是条件，第二个参数是条件为真时的属性）：</p><pre data-tool="mdnice编辑器"><span></span><code><span>#[cfg_attr(feature&nbsp;=&nbsp;<span>"nightly"</span>,&nbsp;feature(some_unstable_feature))]</span><br>...<p><span>#[cfg_attr(feature&nbsp;=&nbsp;<span>"serde"</span>,&nbsp;derive(Serialize,&nbsp;Deserialize))]</span><br><span><span>struct</span>&nbsp;<span>MyStruct</span></span>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span>//&nbsp;fields...</span><br>}</p></code></pre><p data-tool="mdnice编辑器">记住，这些配置可以在编译时使用 <code>--cfg</code> 标志来设置，也可以在 <code>Cargo.toml</code> 中通过 features 来控制。使用这些逻辑组合，你可以非常精细地控制哪些代码在特定条件下被编译。</p><p data-tool="mdnice编辑器"><code>#[cfg()]</code>&nbsp; 在<strong>编译时</strong>评估,不会增加运行时开销。</p><h2 data-tool="mdnice编辑器"><span>cfg_if vs cfg</span></h2><ul data-tool="mdnice编辑器" class="list-paddingleft-1"><li><section><code>#[cfg()]</code>&nbsp; 是 Rust 的内置功能,不需要额外的依赖。</section></li><li><section>对于简单的条件,<code>#[cfg()]</code>&nbsp; 通常更直接。</section></li><li><section>对于复杂的嵌套条件,cfg_if 可能提供更好的可读性。</section></li></ul></section><p><br></p></div></div><div class="foot"></div><div class="dialog"><div class="dcontent"><div class="aclose"><span>留言</span><a class="close" href="javascript:closeDialog();">×</a></div><div class="contain"><div class="d-top"></div><div class="all-deply"></div></div></div></div></body></html>

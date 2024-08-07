@@ -70,6 +70,27 @@ class StrUtil {
   public static trim(str: string): string {
     return str.replaceAll(StrUtil.trimExpression, '');
   }
+
+  /**
+   * 随机字符串
+   * @param length
+   */
+  public static randomStr(length: number = 10) {
+    let str = Math.random().toString(32).replace('0.', '');
+    if (str.length < length) {
+      str += this.randomStr(length - str.length);
+    }
+    return str.slice(0, length);
+  }
+
+  // eslint-disable-next-line no-control-regex
+  static chineseStrRegex = /^([\u0000-\u4e00\u9fa6-\uFFFF])*$/;
+
+  public static containsOnlyNonChinese(str: string) {
+    // 正则表达式，匹配整个字符串，确保其中没有任何中文字符
+    // 使用 regex.test(str) 来检查字符串是否完全由非中文字符组成
+    return this.chineseStrRegex.test(str);
+  }
 }
 
 class HttpUtil {

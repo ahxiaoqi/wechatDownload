@@ -308,7 +308,7 @@ async function html2Pdf(pdfInfo: PdfInfo) {
     height: 800
   });
 
-  const htmlPath = path.join(pdfInfo.savePath, 'pdf.html');
+  const htmlPath = path.join(pdfInfo.savePath, pdfInfo.htmlName);
   pdfWindow.loadFile(htmlPath);
 
   pdfWindow.webContents.on('did-finish-load', () => {
@@ -591,7 +591,10 @@ function setDefaultSetting() {
     caPath: (AnyProxy as any).utils.certMgr.getRootDirPath(),
     // mysql配置-端口
     mysqlHost: 'localhost',
-    mysqlPort: 3306
+    mysqlPort: 3306,
+    translate: 0,
+    transAppKey: '',
+    transSecretKey: ''
   };
 
   for (const i in default_setting) {

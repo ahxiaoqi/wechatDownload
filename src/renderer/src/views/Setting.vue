@@ -46,6 +46,14 @@
             </el-row>
             <el-row>
               <el-col :span="12">
+                <el-checkbox v-model="settingInfo.translate" label="翻译" size="large" />
+              </el-col>
+<!--              <el-col :span="12">-->
+<!--                <el-checkbox v-model="settingInfo.dlComment" label="下载评论" size="large" />-->
+<!--              </el-col>-->
+            </el-row>
+            <el-row>
+              <el-col :span="12">
                 <el-checkbox v-model="settingInfo.dlMysql" label="保存至Mysql" size="large" />
               </el-col>
               <el-col :span="12">
@@ -101,6 +109,17 @@
               </span>
               <span class="batch-limit"> 单批数量：<el-input-number v-model="settingInfo.batchLimit" controls-position="right" precision="0" style="width: 100px" size="small" :min="0" /> </span>
             </div>
+          </div>
+          <div v-if="settingInfo.translate" class="div-border div-pd">
+            <div style="margin-bottom: 5px"><span>百度翻译配置：</span></div>
+            <el-form :model="settingInfo" label-width="auto">
+              <el-form-item label="appKey">
+                <el-input v-model="settingInfo.transAppKey" />
+              </el-form-item>
+              <el-form-item label="transSecretKey">
+                <el-input v-model="settingInfo.transSecretKey" />
+              </el-form-item>
+            </el-form>
           </div>
           <div v-if="settingInfo.dlMysql" class="div-border div-pd">
             <div style="margin-bottom: 5px"><span>Mysql配置：</span><el-button type="primary" size="small" @click="testConnect">测试连接</el-button></div>
@@ -202,7 +221,10 @@ const settingInfo = reactive({
   mysqlPassword: '',
   mysqlDatabase: '',
   tableName: '',
-  filterRule: ''
+  filterRule: '',
+  translate: 0,
+  transAppKey: '',
+  transSecretKey: ''
 });
 let settingInfoOrigin;
 
