@@ -487,7 +487,7 @@ async function getTranslateHtmlStr($) {
         const elementText = element.text();
         transPromiseArr.push(
           baiduTranslator.translate(elementText, downloadOption.transAppKey, downloadOption.transSecretKey, 'zh', 'en', (transStr: string, res: string) => {
-            transResMap.set(elementText, res);
+            transResMap.set(transStr, res);
           })
         );
       }
