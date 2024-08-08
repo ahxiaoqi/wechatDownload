@@ -2,13 +2,10 @@
 
 微信公众号文章下载工具
 
-此仓库已停止维护，感谢使用。
+原作者仓库 https://github.com/xiaoguyu/wechatDownload
 
-## 前言
+原作者已停更,这里使用非fork方式创建了一份仓库进行修改
 
-能来 github 的，我默认都是友好的技术人员。大家提 issues 前，请确保你已经按照下面的说明正确安装证书。在 issues 中详细描述清楚你的环境（系统版本、软件版本、数据库版本等）和遇到的问题，并附上日志（设置中心->打开日志位置）
-
-参考：[提问的智慧](https://github.com/tvvocold/How-To-Ask-Questions-The-Smart-Way)
 
 ## 项目介绍
 
@@ -167,8 +164,10 @@ $ npm run build:mac
 $ npm run build:linux
 ```
 
-## 特别感谢
+[//]: # (## 特别感谢)
 
-[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=wechatDownload)
+[//]: # ()
+[//]: # ([![]&#40;https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg&#41;]&#40;https://www.jetbrains.com/?from=wechatDownload&#41;)
 
-感谢 [JetBrains](https://www.jetbrains.com/?from=wechatDownload) 提供的开源开发许可证
+[//]: # ()
+[//]: # (感谢 [JetBrains]&#40;https://www.jetbrains.com/?from=wechatDownload&#41; 提供的开源开发许可证)
