@@ -2,13 +2,10 @@
 
 微信公众号文章下载工具
 
-此仓库已停止维护，感谢使用。
+原作者仓库 https://github.com/xiaoguyu/wechatDownload
 
-## 前言
+原作者已停更,这里使用非fork方式创建了一份仓库进行修改
 
-能来 github 的，我默认都是友好的技术人员。大家提 issues 前，请确保你已经按照下面的说明正确安装证书。在 issues 中详细描述清楚你的环境（系统版本、软件版本、数据库版本等）和遇到的问题，并附上日志（设置中心->打开日志位置）
-
-参考：[提问的智慧](https://github.com/tvvocold/How-To-Ask-Questions-The-Smart-Way)
 
 ## 项目介绍
 
@@ -41,18 +38,18 @@ Electron + Typescript + VUE3
 - 批量下载
 
   1. 初次使用请安装证书,
-     
+
       - 自动安装（仅限window系统）
-      
+
         需要管理员权限（右击软件图标 -> 以管理员身份运行）
-      
+
         设置中心 → 安装证书
-      
+
       - 手动安装
-      
+
         设置中心 → 打开证书路径 → 打开rootCA.crt文件
         ![Untitled](doc/imgages/ca.png)
-      
+
   2. 需要安装电脑版微信
 
   3. 点击**批量下载**按钮，开始监听微信公号数据
@@ -65,19 +62,19 @@ Electron + Typescript + VUE3
 - 监控下载
 
   1. 需要安装电脑版微信
-  
+
   2. 在WechatDownload点击**监控下载**按钮（按钮会变颜色）
-  
+
   3. 在电脑版微信打开需要下载的文章（可以打开多篇文章）
-  
+
   4. 回到WechatDownload，再次点击**监控下载**按钮即可开始下载
-  
+
      ![wechatDownload](doc/imgages/monitoring.gif)
-  
+
 - 保存至 MySql
 
   需要执行 /doc/mysql.sql 文件中的 SQL 语句创建表
-  
+
 - 线程配置
 
   时间间隔：单位是毫秒，假设时间间隔500，单线程是下载完一篇文章，等待500毫秒再继续下载。多线程就是每500毫秒异步下载文章，无需等待上一篇文章下载完成。
@@ -100,9 +97,9 @@ Electron + Typescript + VUE3
       }
   }
   ```
-  
+
   举例子，如果需要作者是 张三 并且标题包含 好人，那就是
-  
+
   ```json
   {
       "title": {
@@ -113,7 +110,7 @@ Electron + Typescript + VUE3
       }
   }
   ```
-  
+
 - 生成Epub
 
   支持通过 HTML 文件生成 Epub 电子书，所以使用需要先使用**批量下载**将公众号文章保存到本地，再生成 Epub
@@ -167,8 +164,10 @@ $ npm run build:mac
 $ npm run build:linux
 ```
 
-## 特别感谢
+[//]: # (## 特别感谢)
 
-[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=wechatDownload)
+[//]: # ()
+[//]: # ([![]&#40;https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg&#41;]&#40;https://www.jetbrains.com/?from=wechatDownload&#41;)
 
-感谢 [JetBrains](https://www.jetbrains.com/?from=wechatDownload) 提供的开源开发许可证
+[//]: # ()
+[//]: # (感谢 [JetBrains]&#40;https://www.jetbrains.com/?from=wechatDownload&#41; 提供的开源开发许可证)
